@@ -21,10 +21,15 @@ const {
   setSort,
 } = useProcurement()
 
-const topItems = computed(() => {
-  if (!result.value?.data) return []
-  return [...result.value.data].sort((a, b) => b.pagu - a.pagu).slice(0, 5)
+// When a single KLDI is selected, break down by satuanKerja; otherwise by KLDI.
+const chartData = computed(() => {
+  if (!summary.value) return []
+  return query.kldi ? summary.value.bySatker : summary.value.byKldi
 })
+
+const chartTitle = computed(() =>
+  query.kldi ? `Pagu anggaran per satuan kerja — ${query.kldi}` : 'Pagu anggaran per wilayah',
+)
 
 let searchTimeout: ReturnType<typeof setTimeout>
 function onSearchUpdate(val: string) {
@@ -82,14 +87,14 @@ onMounted(() => {
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
         <div class="lg:col-span-3 bg-white rounded-xl border border-stone-200 p-5">
           <CategoryChart
-            v-if="summary?.byKldi"
-            :data="summary.byKldi"
-            title="Pagu anggaran per wilayah"
+            v-if="chartData.length"
+            :data="chartData"
+            :title="chartTitle"
             :max-items="10"
           />
         </div>
         <div class="lg:col-span-2 bg-white rounded-xl border border-stone-200 p-5">
-          <TopProcurements :items="topItems" />
+          <TopProcurements :items="summary?.topItems ?? []" />
         </div>
       </div>
 

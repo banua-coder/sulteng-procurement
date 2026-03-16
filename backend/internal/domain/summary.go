@@ -10,6 +10,8 @@ type Summary struct {
 	ByJenis    []CategoryTotal `json:"byJenis"`
 	ByKLDI     []CategoryTotal `json:"byKldi"`
 	ByMetode   []CategoryTotal `json:"byMetode"`
+	BySatker   []CategoryTotal `json:"bySatker"`
+	TopItems   []Procurement   `json:"topItems"`
 }
 
 // CategoryTotal is a named bucket used in summary breakdowns.

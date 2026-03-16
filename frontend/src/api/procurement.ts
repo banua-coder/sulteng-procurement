@@ -8,8 +8,15 @@ async function fetchJSON<T>(url: string): Promise<T> {
   return res.json()
 }
 
-export function getSummary(): Promise<Summary> {
-  return fetchJSON(`${BASE}/summary`)
+export function getSummary(params?: Partial<Pick<QueryParams, 'kldi' | 'jenisPengadaan' | 'metode' | 'search'>>): Promise<Summary> {
+  const qs = new URLSearchParams()
+  if (params) {
+    for (const [key, value] of Object.entries(params)) {
+      if (value) qs.set(key, value)
+    }
+  }
+  const query = qs.toString()
+  return fetchJSON(`${BASE}/summary${query ? `?${query}` : ''}`)
 }
 
 export function getProcurements(params: Partial<QueryParams>): Promise<PaginatedResult> {

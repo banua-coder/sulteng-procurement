@@ -18,7 +18,7 @@ func sampleData() []domain.Procurement {
 
 func TestGetSummary(t *testing.T) {
 	svc := NewProcurementService(sampleData())
-	summary := svc.GetSummary()
+	summary := svc.GetSummary(domain.ProcurementQuery{})
 
 	if summary.TotalPaket != 5 {
 		t.Errorf("expected 5 paket, got %d", summary.TotalPaket)

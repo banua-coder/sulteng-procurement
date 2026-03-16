@@ -22,7 +22,12 @@ export function useProcurement() {
 
   async function loadSummary() {
     try {
-      summary.value = await getSummary()
+      summary.value = await getSummary({
+        kldi: query.kldi,
+        jenisPengadaan: query.jenisPengadaan,
+        metode: query.metode,
+        search: query.search,
+      })
     } catch (e: unknown) {
       error.value = e instanceof Error ? e.message : String(e)
     }
@@ -70,6 +75,7 @@ export function useProcurement() {
   }
 
   watch(query, () => {
+    loadSummary()
     loadData()
   })
 

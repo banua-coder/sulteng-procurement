@@ -23,8 +23,12 @@ func (s *ProcurementService) SetData(data []domain.Procurement) {
 	s.data = data
 }
 
-// GetSummary returns aggregated totals broken down by jenis, KLDI, and metode.
-func (s *ProcurementService) GetSummary() domain.Summary {
+// GetSummary returns aggregated totals for the (optionally filtered) dataset.
+// When q.KLDI is set, BySatker breaks down by satuanKerja within that KLDI.
+// TopItems always contains the top 5 records by pagu from the filtered set.
+func (s *ProcurementService) GetSummary(q domain.ProcurementQuery) domain.Summary {
+	data := s.filter(q)
+
 	var totalPagu float64
 	jenis := map[string]float64{}
 	jenisCount := map[string]int{}
@@ -32,8 +36,10 @@ func (s *ProcurementService) GetSummary() domain.Summary {
 	kldiCount := map[string]int{}
 	metode := map[string]float64{}
 	metodeCount := map[string]int{}
+	satker := map[string]float64{}
+	satkerCount := map[string]int{}
 
-	for _, p := range s.data {
+	for _, p := range data {
 		totalPagu += p.Pagu
 		jenis[p.JenisPengadaan] += p.Pagu
 		jenisCount[p.JenisPengadaan]++
@@ -41,26 +47,40 @@ func (s *ProcurementService) GetSummary() domain.Summary {
 		kldiCount[p.KLDI]++
 		metode[p.Metode] += p.Pagu
 		metodeCount[p.Metode]++
+		satker[p.SatuanKerja] += p.Pagu
+		satkerCount[p.SatuanKerja]++
 	}
 
 	byJenis := toSortedCategoryTotals(jenis, jenisCount)
 	byKLDI := toSortedCategoryTotals(kldi, kldiCount)
 	byMetode := toSortedCategoryTotals(metode, metodeCount)
+	bySatker := toSortedCategoryTotals(satker, satkerCount)
 
 	topKLDI := ""
 	if len(byKLDI) > 0 {
 		topKLDI = byKLDI[0].Name
 	}
 
+	// Top 5 items by pagu from the filtered set.
+	sorted := make([]domain.Procurement, len(data))
+	copy(sorted, data)
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].Pagu > sorted[j].Pagu })
+	topN := 5
+	if len(sorted) < topN {
+		topN = len(sorted)
+	}
+
 	return domain.Summary{
 		TotalPagu:  totalPagu,
-		TotalPaket: len(s.data),
+		TotalPaket: len(data),
 		JenisCount: len(jenis),
 		KLDICount:  len(kldi),
 		TopKLDI:    topKLDI,
 		ByJenis:    byJenis,
 		ByKLDI:     byKLDI,
 		ByMetode:   byMetode,
+		BySatker:   bySatker,
+		TopItems:   sorted[:topN],
 	}
 }
 

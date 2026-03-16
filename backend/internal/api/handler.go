@@ -24,9 +24,15 @@ func (h *Handler) SetService(svc *service.ProcurementService) {
 	h.svc = svc
 }
 
-// GetSummary returns aggregated procurement statistics.
+// GetSummary returns aggregated procurement statistics, optionally filtered.
 func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
-	writeJSON(w, h.svc.GetSummary())
+	q := domain.ProcurementQuery{
+		KLDI:           r.URL.Query().Get("kldi"),
+		JenisPengadaan: r.URL.Query().Get("jenisPengadaan"),
+		Metode:         r.URL.Query().Get("metode"),
+		Search:         r.URL.Query().Get("search"),
+	}
+	writeJSON(w, h.svc.GetSummary(q))
 }
 
 // GetProcurements returns a filtered, sorted, paginated list of procurement records.

@@ -28,6 +28,8 @@ export interface Summary {
   byJenis: CategoryTotal[]
   byKldi: CategoryTotal[]
   byMetode: CategoryTotal[]
+  bySatker: CategoryTotal[]
+  topItems: Procurement[]
 }
 
 export interface PaginatedResult {
