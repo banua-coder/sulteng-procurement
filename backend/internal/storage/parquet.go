@@ -8,7 +8,7 @@ import (
 	"github.com/xitongsys/parquet-go/reader"
 	"github.com/xitongsys/parquet-go/writer"
 
-	"github.com/ryanaidilp/sulteng-procurement/backend/internal/domain"
+	"github.com/banua-coder/sulteng-procurement/backend/internal/domain"
 )
 
 // ParquetStore reads and writes procurement records as Parquet files.

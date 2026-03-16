@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ryanaidilp/sulteng-procurement/backend/internal/config"
+	"github.com/banua-coder/sulteng-procurement/backend/internal/config"
 )
 
 func main() {

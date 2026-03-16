@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/ryanaidilp/sulteng-procurement/backend/internal/domain"
+	"github.com/banua-coder/sulteng-procurement/backend/internal/domain"
 )
 
 // SultengKLDICodes lists the 14 KLPD codes for Sulawesi Tengah.

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/ryanaidilp/sulteng-procurement/backend/internal/domain"
+	"github.com/banua-coder/sulteng-procurement/backend/internal/domain"
 )
 
 func TestWriteAndRead(t *testing.T) {

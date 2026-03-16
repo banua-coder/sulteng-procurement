@@ -4,9 +4,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/ryanaidilp/sulteng-procurement/backend/internal/config"
-	"github.com/ryanaidilp/sulteng-procurement/backend/internal/scraper"
-	"github.com/ryanaidilp/sulteng-procurement/backend/internal/storage"
+	"github.com/banua-coder/sulteng-procurement/backend/internal/config"
+	"github.com/banua-coder/sulteng-procurement/backend/internal/scraper"
+	"github.com/banua-coder/sulteng-procurement/backend/internal/storage"
 )
 
 func main() {
