@@ -1,0 +1,54 @@
+services:
+  traefik:
+    image: traefik:v3.0
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "8081:8080"  # Traefik dashboard
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  backend:
+    build: ./backend
+    environment:
+      - API_PORT=8080
+      - DATA_DIR=/app/data
+      - SCRAPER_YEAR=${SCRAPER_YEAR:-2026}
+      - SIRUP_URL=${SIRUP_URL:-https://sirup.inaproc.id/sirup/caripaketctr/search}
+      - CRON_SCHEDULE=${CRON_SCHEDULE:-0 2 * * *}
+    volumes:
+      - procurement-data:/app/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`${DOMAIN:-localhost}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=web"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.frontend.rule=Host(`${DOMAIN:-localhost}`)"
+      - "traefik.http.routers.frontend.entrypoints=web"
+      - "traefik.http.services.frontend.loadbalancer.server.port=80"
+
+  scraper:
+    build: ./backend
+    command: ["/app/scraper"]
+    environment:
+      - DATA_DIR=/app/data
+      - SCRAPER_YEAR=${SCRAPER_YEAR:-2026}
+      - SIRUP_URL=${SIRUP_URL:-https://sirup.inaproc.id/sirup/caripaketctr/search}
+    volumes:
+      - procurement-data:/app/data
+    profiles:
+      - scrape
+
+volumes:
+  procurement-data:
