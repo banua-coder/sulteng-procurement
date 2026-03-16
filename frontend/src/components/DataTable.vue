@@ -1,5 +1,16 @@
 <script setup lang="ts">
 import type { PaginatedResult } from '../types/procurement'
+import { Button } from '@/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+  TableEmpty,
+} from '@/components/ui/table'
+import { formatRupiah } from '@/utils/format'
 
 defineProps<{
   result: PaginatedResult | null
@@ -13,9 +24,14 @@ const emit = defineEmits<{
   page: [page: number]
 }>()
 
-function formatRupiah(value: number): string {
-  return `Rp${value.toLocaleString('id-ID')}`
-}
+const columns = [
+  { key: 'kldi', label: 'Wilayah' },
+  { key: 'satuanKerja', label: 'Satuan Kerja' },
+  { key: 'paket', label: 'Paket' },
+  { key: 'jenisPengadaan', label: 'Jenis' },
+  { key: 'metode', label: 'Metode' },
+  { key: 'pagu', label: 'Pagu' },
+]
 
 function sortIcon(field: string, currentSort: string, dir: string): string {
   if (field !== currentSort) return ''
@@ -25,73 +41,70 @@ function sortIcon(field: string, currentSort: string, dir: string): string {
 
 <template>
   <div>
-    <div class="flex items-center justify-between mb-2">
-      <h3 class="font-semibold text-stone-800">Tabel detail</h3>
-      <div class="text-sm text-stone-500" v-if="result">
+    <div class="flex items-center justify-between mb-3">
+      <h3 class="font-semibold">Tabel detail</h3>
+      <div class="text-sm text-muted-foreground" v-if="result">
         Menampilkan {{ result.data.length }} dari {{ result.total.toLocaleString('id-ID') }} data
         <span class="ml-4">Halaman {{ result.page }} dari {{ result.totalPages }}</span>
       </div>
     </div>
 
-    <div class="overflow-x-auto rounded-lg border border-stone-200">
-      <table class="min-w-full text-sm">
-        <thead class="bg-stone-50 text-stone-600">
-          <tr>
-            <th
-              v-for="col in [
-                { key: 'kldi', label: 'Wilayah' },
-                { key: 'satuanKerja', label: 'Satuan Kerja' },
-                { key: 'paket', label: 'Paket' },
-                { key: 'jenisPengadaan', label: 'Jenis' },
-                { key: 'metode', label: 'Metode' },
-                { key: 'pagu', label: 'Pagu' },
-              ]"
+    <div class="rounded-md border">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead
+              v-for="col in columns"
               :key="col.key"
-              class="px-3 py-2 text-left cursor-pointer hover:bg-stone-100 whitespace-nowrap"
+              class="cursor-pointer hover:bg-muted/50 whitespace-nowrap"
               @click="emit('sort', col.key)"
             >
               {{ col.label }}{{ sortIcon(col.key, sortBy, sortDir) }}
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-if="loading">
-            <td colspan="6" class="px-3 py-8 text-center text-stone-400">Memuat data...</td>
-          </tr>
-          <tr v-else-if="!result?.data.length">
-            <td colspan="6" class="px-3 py-8 text-center text-stone-400">Tidak ada data</td>
-          </tr>
-          <tr
-            v-for="item in result?.data"
-            :key="item.id"
-            class="border-t border-stone-100 hover:bg-stone-50"
-          >
-            <td class="px-3 py-2">{{ item.kldi }}</td>
-            <td class="px-3 py-2">{{ item.satuanKerja }}</td>
-            <td class="px-3 py-2 max-w-xs truncate">{{ item.paket }}</td>
-            <td class="px-3 py-2 whitespace-nowrap">{{ item.jenisPengadaan }}</td>
-            <td class="px-3 py-2 whitespace-nowrap">{{ item.metode }}</td>
-            <td class="px-3 py-2 text-right whitespace-nowrap font-mono">{{ formatRupiah(item.pagu) }}</td>
-          </tr>
-        </tbody>
-      </table>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          <TableRow v-if="loading">
+            <TableEmpty :colspan="columns.length" class="py-8 text-center text-muted-foreground">
+              Memuat data...
+            </TableEmpty>
+          </TableRow>
+          <TableRow v-else-if="!result?.data.length">
+            <TableEmpty :colspan="columns.length" class="py-8 text-center text-muted-foreground">
+              Tidak ada data
+            </TableEmpty>
+          </TableRow>
+          <template v-else>
+            <TableRow v-for="item in result?.data" :key="item.id">
+              <TableCell>{{ item.kldi }}</TableCell>
+              <TableCell>{{ item.satuanKerja }}</TableCell>
+              <TableCell class="max-w-xs truncate">{{ item.paket }}</TableCell>
+              <TableCell class="whitespace-nowrap">{{ item.jenisPengadaan }}</TableCell>
+              <TableCell class="whitespace-nowrap">{{ item.metode }}</TableCell>
+              <TableCell class="text-right whitespace-nowrap font-mono">{{ formatRupiah(item.pagu) }}</TableCell>
+            </TableRow>
+          </template>
+        </TableBody>
+      </Table>
     </div>
 
     <div class="flex justify-end gap-2 mt-3" v-if="result && result.totalPages > 1">
-      <button
-        class="px-3 py-1.5 text-sm rounded-lg border border-stone-300 hover:bg-stone-100 disabled:opacity-40"
+      <Button
+        variant="outline"
+        size="sm"
         :disabled="result.page <= 1"
         @click="emit('page', result!.page - 1)"
       >
         Sebelumnya
-      </button>
-      <button
-        class="px-3 py-1.5 text-sm rounded-lg border border-stone-300 hover:bg-stone-100 disabled:opacity-40"
+      </Button>
+      <Button
+        variant="outline"
+        size="sm"
         :disabled="result.page >= result.totalPages"
         @click="emit('page', result!.page + 1)"
       >
         Berikutnya
-      </button>
+      </Button>
     </div>
   </div>
 </template>

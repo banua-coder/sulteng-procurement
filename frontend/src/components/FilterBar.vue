@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import type { Filters } from '../types/procurement'
+import { Input } from '@/components/ui/input'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
 const props = defineProps<{
   filters: Filters | null
@@ -21,61 +29,71 @@ const emit = defineEmits<{
 
 <template>
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-    <div>
-      <label class="block text-sm font-medium text-stone-600 mb-1">Wilayah (KLPD)</label>
-      <select
-        :value="kldi"
-        class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-        @change="emit('update:kldi', ($event.target as HTMLSelectElement).value)"
-      >
-        <option value="">Semua wilayah</option>
-        <option v-for="k in props.filters?.kldi" :key="k" :value="k">{{ k }}</option>
-      </select>
+    <div class="space-y-1">
+      <label class="text-sm font-medium text-muted-foreground">Wilayah (KLPD)</label>
+      <Select :model-value="kldi" @update:model-value="(v) => emit('update:kldi', v ?? '')">
+        <SelectTrigger class="w-full">
+          <SelectValue placeholder="Semua wilayah" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="">Semua wilayah</SelectItem>
+          <SelectItem v-for="k in props.filters?.kldi" :key="k" :value="k">{{ k }}</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
-    <div>
-      <label class="block text-sm font-medium text-stone-600 mb-1">Jenis pengadaan</label>
-      <select
-        :value="jenisPengadaan"
-        class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-        @change="emit('update:jenisPengadaan', ($event.target as HTMLSelectElement).value)"
-      >
-        <option value="">Semua jenis</option>
-        <option v-for="j in props.filters?.jenisPengadaan" :key="j" :value="j">{{ j }}</option>
-      </select>
+
+    <div class="space-y-1">
+      <label class="text-sm font-medium text-muted-foreground">Jenis pengadaan</label>
+      <Select :model-value="jenisPengadaan" @update:model-value="(v) => emit('update:jenisPengadaan', v ?? '')">
+        <SelectTrigger class="w-full">
+          <SelectValue placeholder="Semua jenis" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="">Semua jenis</SelectItem>
+          <SelectItem v-for="j in props.filters?.jenisPengadaan" :key="j" :value="j">{{ j }}</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
-    <div>
-      <label class="block text-sm font-medium text-stone-600 mb-1">Metode pengadaan</label>
-      <select
-        :value="metode"
-        class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-        @change="emit('update:metode', ($event.target as HTMLSelectElement).value)"
-      >
-        <option value="">Semua metode</option>
-        <option v-for="m in props.filters?.metode" :key="m" :value="m">{{ m }}</option>
-      </select>
+
+    <div class="space-y-1">
+      <label class="text-sm font-medium text-muted-foreground">Metode pengadaan</label>
+      <Select :model-value="metode" @update:model-value="(v) => emit('update:metode', v ?? '')">
+        <SelectTrigger class="w-full">
+          <SelectValue placeholder="Semua metode" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="">Semua metode</SelectItem>
+          <SelectItem v-for="m in props.filters?.metode" :key="m" :value="m">{{ m }}</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
-    <div>
-      <label class="block text-sm font-medium text-stone-600 mb-1">Cari paket / satker</label>
-      <input
+
+    <div class="space-y-1">
+      <label class="text-sm font-medium text-muted-foreground">Cari paket / satker</label>
+      <Input
         :value="search"
         type="text"
         placeholder="Ketik kata kunci..."
-        class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
         @input="emit('update:search', ($event.target as HTMLInputElement).value)"
       />
     </div>
-    <div>
-      <label class="block text-sm font-medium text-stone-600 mb-1">Baris per halaman</label>
-      <select
-        :value="pageSize"
-        class="w-full rounded-lg border border-stone-300 bg-white px-3 py-2 text-sm"
-        @change="emit('update:pageSize', Number(($event.target as HTMLSelectElement).value))"
+
+    <div class="space-y-1">
+      <label class="text-sm font-medium text-muted-foreground">Baris per halaman</label>
+      <Select
+        :model-value="String(pageSize)"
+        @update:model-value="(v) => emit('update:pageSize', Number(v ?? 25))"
       >
-        <option :value="10">10</option>
-        <option :value="25">25</option>
-        <option :value="50">50</option>
-        <option :value="100">100</option>
-      </select>
+        <SelectTrigger class="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="10">10</SelectItem>
+          <SelectItem value="25">25</SelectItem>
+          <SelectItem value="50">50</SelectItem>
+          <SelectItem value="100">100</SelectItem>
+        </SelectContent>
+      </Select>
     </div>
   </div>
 </template>
