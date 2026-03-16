@@ -1,0 +1,7 @@
+{
+  "database": "dolt",
+  "backend": "dolt",
+  "dolt_mode": "server",
+  "dolt_database": "sulteng_procurement",
+  "project_id": "5e3dbfc9-4ab4-40ec-8089-5bd83827dc0d"
+}
