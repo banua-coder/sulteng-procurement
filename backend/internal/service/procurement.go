@@ -69,6 +69,10 @@ func (s *ProcurementService) GetSummary(q domain.ProcurementQuery) domain.Summar
 	if len(sorted) < topN {
 		topN = len(sorted)
 	}
+	topItems := sorted[:topN]
+	if topItems == nil {
+		topItems = []domain.Procurement{}
+	}
 
 	return domain.Summary{
 		TotalPagu:  totalPagu,
@@ -80,7 +84,7 @@ func (s *ProcurementService) GetSummary(q domain.ProcurementQuery) domain.Summar
 		ByKLDI:     byKLDI,
 		ByMetode:   byMetode,
 		BySatker:   bySatker,
-		TopItems:   sorted[:topN],
+		TopItems:   topItems,
 	}
 }
 
@@ -138,7 +142,7 @@ func (s *ProcurementService) GetFilters() map[string][]string {
 }
 
 func (s *ProcurementService) filter(q domain.ProcurementQuery) []domain.Procurement {
-	var result []domain.Procurement
+	result := make([]domain.Procurement, 0)
 	search := strings.ToLower(q.Search)
 
 	for _, p := range s.data {

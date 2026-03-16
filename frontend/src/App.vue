@@ -24,7 +24,7 @@ const {
 // When a single KLDI is selected, break down by satuanKerja; otherwise by KLDI.
 const chartData = computed(() => {
   if (!summary.value) return []
-  return query.kldi ? summary.value.bySatker : summary.value.byKldi
+  return (query.kldi ? summary.value.bySatker : summary.value.byKldi) ?? []
 })
 
 const chartTitle = computed(() =>
