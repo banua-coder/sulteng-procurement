@@ -11,12 +11,12 @@ defineProps<{ items: Procurement[] }>()
   <Card class="h-full">
     <CardHeader>
       <CardTitle>Paket pengadaan terbesar</CardTitle>
-      <CardDescription>5 paket dengan pagu tertinggi.</CardDescription>
+      <CardDescription>Paket dengan pagu tertinggi.</CardDescription>
     </CardHeader>
     <CardContent>
-      <div class="space-y-4">
+      <div class="space-y-4 max-h-72 overflow-y-auto pr-1">
         <div
-          v-for="item in items.slice(0, 5)"
+          v-for="item in items"
           :key="item.id"
           class="border-b border-border pb-3 last:border-0 last:pb-0"
         >
