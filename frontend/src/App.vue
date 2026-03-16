@@ -31,13 +31,9 @@ const chartTitle = computed(() =>
   query.kldi ? `Pagu anggaran per satuan kerja — ${query.kldi}` : 'Pagu anggaran per wilayah',
 )
 
-let searchTimeout: ReturnType<typeof setTimeout>
 function onSearchUpdate(val: string) {
-  clearTimeout(searchTimeout)
-  searchTimeout = setTimeout(() => {
-    query.search = val
-    query.page = 1
-  }, 300)
+  query.search = val
+  query.page = 1
 }
 
 function onFilterChange(key: 'kldi' | 'jenisPengadaan' | 'metode', val: string) {

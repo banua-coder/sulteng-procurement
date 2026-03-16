@@ -16,8 +16,8 @@ defineProps<{ items: Procurement[] }>()
     <CardContent>
       <div class="space-y-4 max-h-72 overflow-y-auto pr-1">
         <div
-          v-for="item in items"
-          :key="item.id"
+          v-for="(item, i) in items"
+          :key="`${item.id}-${i}`"
           class="border-b border-border pb-3 last:border-0 last:pb-0"
         >
           <div class="font-medium text-sm leading-snug">{{ item.paket }}</div>

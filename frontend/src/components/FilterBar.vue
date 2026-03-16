@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import type { Filters } from '../types/procurement'
 import { Input } from '@/components/ui/input'
 import {
@@ -27,6 +28,21 @@ const emit = defineEmits<{
   'update:search': [value: string]
   'update:pageSize': [value: number]
 }>()
+
+// Local ref so the input is never fighting the debounce lag from the parent.
+const localSearch = ref(props.search)
+
+// Keep in sync if parent resets the value (e.g. resetFilters).
+watch(() => props.search, (v) => {
+  if (v !== localSearch.value) localSearch.value = v
+})
+
+let searchTimer: ReturnType<typeof setTimeout>
+function onSearchInput(e: Event) {
+  localSearch.value = (e.target as HTMLInputElement).value
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => emit('update:search', localSearch.value), 300)
+}
 
 function toModel(v: string) {
   return v === '' ? ALL : v
@@ -81,10 +97,10 @@ function fromModel(v: string | undefined) {
     <div class="space-y-1">
       <label class="text-sm font-medium text-muted-foreground">Cari paket / satker</label>
       <Input
-        :value="search"
+        :value="localSearch"
         type="text"
         placeholder="Ketik kata kunci..."
-        @input="emit('update:search', ($event.target as HTMLInputElement).value)"
+        @input="onSearchInput"
       />
     </div>
 
