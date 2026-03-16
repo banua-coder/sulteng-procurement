@@ -1,0 +1,21 @@
+name: Release
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches: [main]
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    uses: banua-coder/banua-coder-workflow/.github/workflows/release.yml@main
+    with:
+      project-type: web-app
+      main-branch: main
+      develop-branch: develop
+      changelog-format: keepachangelog
+      auto-merge-backport: true
+    secrets:
+      GH_PAT: ${{ secrets.GH_PAT }}

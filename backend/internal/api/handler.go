@@ -19,6 +19,11 @@ func NewHandler(svc *service.ProcurementService) *Handler {
 	return &Handler{svc: svc}
 }
 
+// SetService hot-swaps the underlying service (used by the cron scraper).
+func (h *Handler) SetService(svc *service.ProcurementService) {
+	h.svc = svc
+}
+
 // GetSummary returns aggregated procurement statistics.
 func (h *Handler) GetSummary(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, h.svc.GetSummary())

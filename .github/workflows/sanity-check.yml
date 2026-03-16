@@ -1,0 +1,17 @@
+name: Sanity Check
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**'
+
+jobs:
+  sanity:
+    uses: banua-coder/banua-coder-workflow/.github/workflows/sanity-check.yml@main
+    with:
+      project-type: vue
+      node-version: '20'
+      vue-max-loc: 700
+      check-vue-types: true
+      post-comment: true
+      fail-on-issues: false

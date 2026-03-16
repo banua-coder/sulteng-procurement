@@ -3,9 +3,13 @@ package main
 import (
 	"log"
 	"net/http"
+	"sync"
+
+	"github.com/robfig/cron/v3"
 
 	"github.com/banua-coder/sulteng-procurement/backend/internal/api"
 	"github.com/banua-coder/sulteng-procurement/backend/internal/config"
+	"github.com/banua-coder/sulteng-procurement/backend/internal/scraper"
 	"github.com/banua-coder/sulteng-procurement/backend/internal/service"
 	"github.com/banua-coder/sulteng-procurement/backend/internal/storage"
 )
@@ -21,11 +25,40 @@ func main() {
 	}
 	log.Printf("Loaded %d procurement records", len(data))
 
+	var mu sync.RWMutex
 	svc := service.NewProcurementService(data)
 	handler := api.NewHandler(svc)
 	router := api.NewRouter(handler)
 
-	log.Printf("API server listening on :%s", cfg.Port)
+	client := scraper.NewSirupClient(cfg.SirupURL, cfg.ScraperYear)
+
+	runScrape := func() {
+		log.Println("Cron: starting daily scrape")
+		records, err := client.FetchAll()
+		if err != nil {
+			log.Printf("Cron: scrape failed: %v", err)
+			return
+		}
+		domain := scraper.ToDomain(records)
+		if err := store.Write(cfg.ScraperYear, domain); err != nil {
+			log.Printf("Cron: write failed: %v", err)
+			return
+		}
+		mu.Lock()
+		newSvc := service.NewProcurementService(domain)
+		handler.SetService(newSvc)
+		mu.Unlock()
+		log.Printf("Cron: scrape complete, %d records loaded", len(domain))
+	}
+
+	c := cron.New()
+	if _, err := c.AddFunc(cfg.CronSchedule, runScrape); err != nil {
+		log.Fatalf("Invalid cron schedule %q: %v", cfg.CronSchedule, err)
+	}
+	c.Start()
+	defer c.Stop()
+
+	log.Printf("API server listening on :%s (cron: %s)", cfg.Port, cfg.CronSchedule)
 	if err := http.ListenAndServe(":"+cfg.Port, router); err != nil {
 		log.Fatal(err)
 	}
