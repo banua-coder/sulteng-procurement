@@ -24,7 +24,7 @@ func TestFetchPage(t *testing.T) {
 				{ID: 2, Paket: "Test Package 2", Pagu: 2000000, JenisPengadaan: "Jasa Lainnya", Metode: "E-Purchasing", KLDI: "Kota Palu"},
 			},
 		}
-		json.NewEncoder(w).Encode(resp)
+		_ = json.NewEncoder(w).Encode(resp)
 	}))
 	defer server.Close()
 
@@ -60,7 +60,7 @@ func TestFetchAllPages(t *testing.T) {
 				resp.Data = append(resp.Data, SirupRecord{ID: int64(i), Paket: "Pkg", Pagu: 1000})
 			}
 		}
-		json.NewEncoder(w).Encode(resp)
+		_ = json.NewEncoder(w).Encode(resp)
 	}))
 	defer server.Close()
 

@@ -78,7 +78,7 @@ func (c *SirupClient) FetchPage(start, length int) ([]SirupRecord, int, error) {
 	if err != nil {
 		return nil, 0, fmt.Errorf("fetch page start=%d: %w", start, err)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	var result SirupResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {

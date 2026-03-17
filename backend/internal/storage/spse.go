@@ -64,7 +64,7 @@ func (s *SpseStore) Read(year int) ([]domain.TenderResult, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open file: %w", err)
 	}
-	defer fr.Close()
+	defer func() { _ = fr.Close() }()
 
 	pr, err := reader.NewParquetReader(fr, new(domain.TenderResult), 4)
 	if err != nil {

@@ -9,7 +9,7 @@ import (
 func TestExtractToken(t *testing.T) {
 	html := `<html><body><script>var authenticityToken = 'abc123xyz';</script></body></html>`
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte(html))
+		_, _ = w.Write([]byte(html))
 	}))
 	defer ts.Close()
 

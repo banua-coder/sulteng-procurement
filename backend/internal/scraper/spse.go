@@ -39,10 +39,10 @@ func (c *SpseClient) extractToken(path string) (string, error) {
 		return "", fmt.Errorf("GET %s: %w", path, err)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		return "", fmt.Errorf("GET %s: HTTP %d", path, resp.StatusCode)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", fmt.Errorf("read body: %w", err)
@@ -119,10 +119,10 @@ func (c *SpseClient) fetchPage(path, token string, start, length int) (*dtRespon
 		return nil, fmt.Errorf("POST %s: %w", path, err)
 	}
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		return nil, fmt.Errorf("POST %s: HTTP %d", path, resp.StatusCode)
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 	var result dtResponse
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return nil, fmt.Errorf("decode %s: %w", path, err)
@@ -226,14 +226,14 @@ func (c *SpseClient) EnrichWinners(records []domain.TenderResult) []domain.Tende
 			continue
 		}
 		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
-			resp.Body.Close()
+			_ = resp.Body.Close()
 			log.Printf("EnrichWinners: GET %s: HTTP %d", path, resp.StatusCode)
 			enriched[i] = r
 			time.Sleep(100 * time.Millisecond)
 			continue
 		}
 		body, _ := io.ReadAll(resp.Body)
-		resp.Body.Close()
+		_ = resp.Body.Close()
 		if w, ok := parseWinner(body); ok {
 			r.Pemenang = w.Pemenang
 			r.NPWP = w.NPWP

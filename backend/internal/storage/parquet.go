@@ -57,7 +57,7 @@ func (s *ParquetStore) Read(year int) ([]domain.Procurement, error) {
 	if err != nil {
 		return nil, fmt.Errorf("open file: %w", err)
 	}
-	defer fr.Close()
+	defer func() { _ = fr.Close() }()
 
 	pr, err := reader.NewParquetReader(fr, new(domain.Procurement), 4)
 	if err != nil {
