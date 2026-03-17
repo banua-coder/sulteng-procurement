@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
 import { useProcurement } from './composables/useProcurement'
+import { useRealisasi } from './composables/useRealisasi'
 import FilterBar from './components/FilterBar.vue'
 import SummaryCards from './components/SummaryCards.vue'
 import CategoryChart from './components/CategoryChart.vue'
 import TopProcurements from './components/TopProcurements.vue'
 import DataTable from './components/DataTable.vue'
+import RealisasiCards from './components/RealisasiCards.vue'
+import type { TenderResult } from './types/procurement'
 
 const {
   summary,
@@ -20,6 +23,17 @@ const {
   setPage,
   setSort,
 } = useProcurement()
+
+const { summary: realSummary, records: realRecords, available: spseAvailable } = useRealisasi()
+
+const tenderMap = computed(() => {
+  if (!spseAvailable.value || !realRecords.value.length) return undefined
+  const map = new Map<number, TenderResult>()
+  for (const r of realRecords.value) {
+    if (r.tender) map.set(r.rup.id, r.tender)
+  }
+  return map
+})
 
 // When a single KLDI is selected, break down by satuanKerja; otherwise by KLDI.
 const chartData = computed(() => {
@@ -80,6 +94,11 @@ onMounted(() => {
         <SummaryCards :summary="summary" />
       </div>
 
+      <div v-if="spseAvailable && realSummary" class="mt-4">
+        <h2 class="text-lg font-semibold text-stone-700 mb-3">Realisasi kontrak</h2>
+        <RealisasiCards :summary="realSummary" />
+      </div>
+
       <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mt-6">
         <div class="lg:col-span-3 bg-white rounded-xl border border-stone-200 p-5">
           <CategoryChart
@@ -100,6 +119,7 @@ onMounted(() => {
           :loading="loading"
           :sort-by="query.sortBy"
           :sort-dir="query.sortDir"
+          :tender-map="tenderMap"
           @sort="setSort"
           @page="setPage"
         />

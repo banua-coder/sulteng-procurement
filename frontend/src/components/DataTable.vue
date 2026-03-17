@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { PaginatedResult } from '../types/procurement'
+import type { PaginatedResult, TenderResult } from '../types/procurement'
 import { Button } from '@/components/ui/button'
 import {
   Table,
@@ -12,12 +12,15 @@ import {
 } from '@/components/ui/table'
 import { formatRupiah } from '@/utils/format'
 
-defineProps<{
+const props = withDefaults(defineProps<{
   result: PaginatedResult | null
   loading: boolean
   sortBy: string
   sortDir: string
-}>()
+  tenderMap?: Map<number, TenderResult>
+}>(), {
+  tenderMap: undefined
+})
 
 const emit = defineEmits<{
   sort: [field: string]
@@ -61,6 +64,8 @@ function sortIcon(field: string, currentSort: string, dir: string): string {
             >
               {{ col.label }}{{ sortIcon(col.key, sortBy, sortDir) }}
             </TableHead>
+            <TableHead v-if="props.tenderMap">Nilai Kontrak</TableHead>
+            <TableHead v-if="props.tenderMap">Pemenang</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -82,6 +87,12 @@ function sortIcon(field: string, currentSort: string, dir: string): string {
               <TableCell class="whitespace-nowrap">{{ item.jenisPengadaan }}</TableCell>
               <TableCell class="whitespace-nowrap">{{ item.metode }}</TableCell>
               <TableCell class="text-right whitespace-nowrap font-mono">{{ formatRupiah(item.pagu) }}</TableCell>
+              <TableCell v-if="props.tenderMap">
+                {{ props.tenderMap.get(item.id) ? formatRupiah(props.tenderMap.get(item.id)!.nilaiKontrak) : '—' }}
+              </TableCell>
+              <TableCell v-if="props.tenderMap" class="text-xs max-w-32 truncate" :title="props.tenderMap.get(item.id)?.pemenang">
+                {{ props.tenderMap.get(item.id)?.pemenang ?? '—' }}
+              </TableCell>
             </TableRow>
           </template>
         </TableBody>
