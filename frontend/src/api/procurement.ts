@@ -1,4 +1,4 @@
-import type { Summary, PaginatedResult, Filters, QueryParams } from '../types/procurement'
+import type { Summary, PaginatedResult, Filters, QueryParams, RealisasiSummary, JoinedRecord } from '../types/procurement'
 
 const BASE = '/api/v1'
 
@@ -31,4 +31,12 @@ export function getProcurements(params: Partial<QueryParams>): Promise<Paginated
 
 export function getFilters(): Promise<Filters> {
   return fetchJSON(`${BASE}/filters`)
+}
+
+export function getRealisasiSummary(): Promise<RealisasiSummary> {
+  return fetchJSON(`${BASE}/realisasi/summary`)
+}
+
+export function getRealisasi(): Promise<JoinedRecord[]> {
+  return fetchJSON(`${BASE}/realisasi`)
 }
