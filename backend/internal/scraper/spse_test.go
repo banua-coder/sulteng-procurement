@@ -39,3 +39,14 @@ func TestParseLelangRow(t *testing.T) {
 		t.Errorf("expected Tahap='Selesai', got %q", result.Tahap)
 	}
 }
+
+func TestParseWinner(t *testing.T) {
+	body := `[{"nama_peserta":"PT Maju Bersama","npwp":"12.345.678.9-000.000","nilai_penawaran":"4500000000","is_winner":"1"}]`
+	winner, found := parseWinner([]byte(body))
+	if !found {
+		t.Fatal("expected winner found")
+	}
+	if winner.Pemenang != "PT Maju Bersama" {
+		t.Errorf("expected 'PT Maju Bersama', got %q", winner.Pemenang)
+	}
+}
