@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 
 	"github.com/xitongsys/parquet-go-source/local"
+	goparquet "github.com/xitongsys/parquet-go/parquet"
 	"github.com/xitongsys/parquet-go/reader"
 	"github.com/xitongsys/parquet-go/writer"
 
@@ -43,7 +44,7 @@ func (s *SpseStore) Write(year int, records []domain.TenderResult) error {
 	if err != nil {
 		return fmt.Errorf("new writer: %w", err)
 	}
-	pw.CompressionType = 1 // SNAPPY
+	pw.CompressionType = goparquet.CompressionCodec_SNAPPY
 
 	for _, r := range records {
 		if err := pw.Write(r); err != nil {
