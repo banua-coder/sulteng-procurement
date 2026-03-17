@@ -48,8 +48,9 @@ function toModel(v: string) {
   return v === '' ? ALL : v
 }
 
-function fromModel(v: string | undefined) {
-  return v === ALL || v === undefined ? '' : v
+function fromModel(v: unknown): string {
+  const s = v == null ? '' : String(v)
+  return s === ALL ? '' : s
 }
 </script>
 

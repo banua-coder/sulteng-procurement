@@ -88,7 +88,9 @@ function sortIcon(field: string, currentSort: string, dir: string): string {
               <TableCell class="whitespace-nowrap">{{ item.metode }}</TableCell>
               <TableCell class="text-right whitespace-nowrap font-mono">{{ formatRupiah(item.pagu) }}</TableCell>
               <TableCell v-if="props.tenderMap">
-                {{ props.tenderMap.get(item.id) ? formatRupiah(props.tenderMap.get(item.id)!.nilaiKontrak) : '—' }}
+                {{ props.tenderMap.get(item.id)?.nilaiKontrak != null
+                  ? formatRupiah(props.tenderMap.get(item.id)!.nilaiKontrak)
+                  : '—' }}
               </TableCell>
               <TableCell v-if="props.tenderMap" class="text-xs max-w-32 truncate" :title="props.tenderMap.get(item.id)?.pemenang">
                 {{ props.tenderMap.get(item.id)?.pemenang ?? '—' }}

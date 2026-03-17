@@ -10,6 +10,7 @@ type Config struct {
 	Port         string
 	DataDir      string
 	SirupURL     string
+	SpseURL      string
 	ScraperYear  int
 	CronSchedule string
 }
@@ -30,6 +31,11 @@ func Load() *Config {
 		sirupURL = "https://sirup.inaproc.id/sirup/caripaketctr/search"
 	}
 
+	spseURL := os.Getenv("SPSE_URL")
+	if spseURL == "" {
+		spseURL = "https://spse.inaproc.id/sultengprov"
+	}
+
 	scraperYear := time.Now().Year()
 	if v := os.Getenv("SCRAPER_YEAR"); v != "" {
 		if y, err := strconv.Atoi(v); err == nil {
@@ -46,6 +52,7 @@ func Load() *Config {
 		Port:         port,
 		DataDir:      dataDir,
 		SirupURL:     sirupURL,
+		SpseURL:      spseURL,
 		ScraperYear:  scraperYear,
 		CronSchedule: cronSchedule,
 	}

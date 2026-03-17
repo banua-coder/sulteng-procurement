@@ -11,8 +11,9 @@ export function useRealisasi() {
   async function load() {
     loading.value = true
     try {
-      summary.value = await getRealisasiSummary()
-      records.value = await getRealisasi()
+      const [s, r] = await Promise.all([getRealisasiSummary(), getRealisasi()])
+      summary.value = s
+      records.value = r
       available.value = true
     } catch {
       available.value = false
@@ -23,5 +24,5 @@ export function useRealisasi() {
 
   onMounted(load)
 
-  return { summary, records, loading, available }
+  return { summary, records, loading, available, load }
 }

@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"net/http"
-	"os"
 	"sync"
 
 	"github.com/robfig/cron/v3"
@@ -61,19 +60,14 @@ func main() {
 		}
 		mu.Lock()
 		currentData = scraped
-		newSvc := service.NewProcurementService(scraped)
-		handler.SetService(newSvc)
 		mu.Unlock()
+		handler.SetService(service.NewProcurementService(scraped))
 		log.Printf("Cron: scrape complete, %d records loaded", len(scraped))
 	}
 
 	runSpseScrape := func() {
 		log.Println("Cron: starting SPSE scrape")
-		spseBase := os.Getenv("SPSE_URL")
-		if spseBase == "" {
-			spseBase = "https://spse.inaproc.id/sultengprov"
-		}
-		spseClient := scraper.NewSpseClient(spseBase, cfg.ScraperYear)
+		spseClient := scraper.NewSpseClient(cfg.SpseURL, cfg.ScraperYear)
 		tenders, err := spseClient.FetchAll()
 		if err != nil {
 			log.Printf("Cron: SPSE FetchAll failed: %v", err)
@@ -84,10 +78,10 @@ func main() {
 			log.Printf("Cron: SPSE write failed: %v", err)
 			return
 		}
-		mu.Lock()
-		newRealSvc := service.NewRealisasiService(currentData, tenders)
-		handler.SetRealisasiService(newRealSvc)
-		mu.Unlock()
+		mu.RLock()
+		rup := currentData
+		mu.RUnlock()
+		handler.SetRealisasiService(service.NewRealisasiService(rup, tenders))
 		log.Printf("Cron: SPSE scrape complete, %d tenders loaded", len(tenders))
 	}
 
