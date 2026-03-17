@@ -56,3 +56,28 @@ export interface QueryParams {
   sortBy: string
   sortDir: string
 }
+
+export interface TenderResult {
+  id: number
+  namaPaket: string
+  nilaiKontrak: number
+  nilaiPenawaran: number
+  tahap: string
+  satuanKerja: string
+  jenis: 'lelang' | 'pl'
+  pemenang: string
+  npwp: string
+}
+
+export interface JoinedRecord {
+  rup: Procurement
+  tender?: TenderResult
+}
+
+export interface RealisasiSummary {
+  totalPagu: number
+  totalKontrak: number
+  totalSelesai: number
+  utilisasiRate: number
+  belumTender: number
+}
