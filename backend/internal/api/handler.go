@@ -11,7 +11,8 @@ import (
 
 // Handler holds the procurement service and exposes HTTP handlers.
 type Handler struct {
-	svc *service.ProcurementService
+	svc     *service.ProcurementService
+	realSvc *service.RealisasiService
 }
 
 // NewHandler creates a handler backed by the given service.
@@ -22,6 +23,11 @@ func NewHandler(svc *service.ProcurementService) *Handler {
 // SetService hot-swaps the underlying service (used by the cron scraper).
 func (h *Handler) SetService(svc *service.ProcurementService) {
 	h.svc = svc
+}
+
+// SetRealisasiService sets the realisasi service on the handler.
+func (h *Handler) SetRealisasiService(svc *service.RealisasiService) {
+	h.realSvc = svc
 }
 
 // GetSummary returns aggregated procurement statistics, optionally filtered.
@@ -53,6 +59,26 @@ func (h *Handler) GetProcurements(w http.ResponseWriter, r *http.Request) {
 // GetFilters returns the distinct values available for each filter field.
 func (h *Handler) GetFilters(w http.ResponseWriter, r *http.Request) {
 	writeJSON(w, h.svc.GetFilters())
+}
+
+// GetRealisasiSummary returns aggregate budget utilisation metrics.
+// Returns 503 if the SPSE data has not yet been loaded.
+func (h *Handler) GetRealisasiSummary(w http.ResponseWriter, r *http.Request) {
+	if h.realSvc == nil {
+		http.Error(w, "SPSE data not loaded", http.StatusServiceUnavailable)
+		return
+	}
+	writeJSON(w, h.realSvc.GetSummary())
+}
+
+// GetRealisasi returns the full list of RUP records joined with their SPSE tender results.
+// Returns 503 if the SPSE data has not yet been loaded.
+func (h *Handler) GetRealisasi(w http.ResponseWriter, r *http.Request) {
+	if h.realSvc == nil {
+		http.Error(w, "SPSE data not loaded", http.StatusServiceUnavailable)
+		return
+	}
+	writeJSON(w, h.realSvc.Join())
 }
 
 func writeJSON(w http.ResponseWriter, data any) {

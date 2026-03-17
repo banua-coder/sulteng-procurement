@@ -26,6 +26,8 @@ func NewRouter(h *Handler) http.Handler {
 		r.Get("/summary", h.GetSummary)
 		r.Get("/procurements", h.GetProcurements)
 		r.Get("/filters", h.GetFilters)
+		r.Get("/realisasi/summary", h.GetRealisasiSummary)
+		r.Get("/realisasi", h.GetRealisasi)
 	})
 
 	r.Get("/health", func(w http.ResponseWriter, r *http.Request) {

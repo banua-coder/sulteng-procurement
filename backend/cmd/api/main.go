@@ -28,6 +28,19 @@ func main() {
 	var mu sync.RWMutex
 	svc := service.NewProcurementService(data)
 	handler := api.NewHandler(svc)
+
+	spseStore := storage.NewSpseStore(cfg.DataDir)
+	if spseStore.Exists(cfg.ScraperYear) {
+		tenders, err := spseStore.Read(cfg.ScraperYear)
+		if err != nil {
+			log.Printf("Warning: could not load SPSE data: %v", err)
+		} else {
+			log.Printf("Loaded %d SPSE tender records", len(tenders))
+			realSvc := service.NewRealisasiService(data, tenders)
+			handler.SetRealisasiService(realSvc)
+		}
+	}
+
 	router := api.NewRouter(handler)
 
 	client := scraper.NewSirupClient(cfg.SirupURL, cfg.ScraperYear)

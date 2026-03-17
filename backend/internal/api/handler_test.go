@@ -75,3 +75,43 @@ func TestGetFilters(t *testing.T) {
 		t.Errorf("expected 2 kldi options, got %d", len(filters["kldi"]))
 	}
 }
+
+func TestGetRealisasiSummary(t *testing.T) {
+	rup := []domain.Procurement{
+		{ID: 1, IdReferensi: 10, Paket: "Jalan", Pagu: 5000000000},
+	}
+	tenders := []domain.TenderResult{
+		{ID: 10, NilaiKontrak: 4500000000, Tahap: "Selesai", Pemenang: "PT Test"},
+	}
+	svc := service.NewProcurementService(rup)
+	realSvc := service.NewRealisasiService(rup, tenders)
+	h := NewHandler(svc)
+	h.SetRealisasiService(realSvc)
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/realisasi/summary", nil)
+	w := httptest.NewRecorder()
+	h.GetRealisasiSummary(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected 200, got %d", w.Code)
+	}
+	var result domain.RealisasiSummary
+	json.NewDecoder(w.Body).Decode(&result)
+	if result.TotalSelesai != 1 {
+		t.Errorf("expected 1 selesai, got %d", result.TotalSelesai)
+	}
+}
+
+func TestGetRealisasiWhenNotLoaded(t *testing.T) {
+	svc := service.NewProcurementService(nil)
+	h := NewHandler(svc)
+	// realSvc not set
+
+	req := httptest.NewRequest(http.MethodGet, "/api/v1/realisasi/summary", nil)
+	w := httptest.NewRecorder()
+	h.GetRealisasiSummary(w, req)
+
+	if w.Code != http.StatusServiceUnavailable {
+		t.Errorf("expected 503, got %d", w.Code)
+	}
+}
