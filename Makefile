@@ -34,5 +34,5 @@ test: ## Run all Go tests
 	cd backend && go test ./... -v
 
 build: ## Build Go binaries
-	cd backend && go build ./cmd/api && go build ./cmd/scraper
+	cd backend && go build ./cmd/api && go build ./cmd/scraper && go build ./cmd/spse-scraper
 	cd frontend && npm run build

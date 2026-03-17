@@ -132,7 +132,7 @@ func ToDomain(records []SirupRecord) []domain.Procurement {
 			IsUMK:            r.IsUMK,
 			IdBulan:          r.IdBulan,
 			IdKldi:           r.IdKldi,
-			IdReferensi:      r.IdReferensi,
+			IdReferensi:      int64(r.IdReferensi),
 			IdSatker:         r.IdSatker,
 			IdMetode:         r.IdMetode,
 			IdJenisPengadaan: r.IdJenisPengadaan,

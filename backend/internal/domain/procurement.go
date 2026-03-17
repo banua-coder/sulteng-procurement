@@ -16,7 +16,7 @@ type Procurement struct {
 	IsUMK            bool    `json:"isUMK" parquet:"name=is_umk, type=BOOLEAN"`
 	IdBulan          int     `json:"idBulan" parquet:"name=id_bulan, type=INT32"`
 	IdKldi           string  `json:"idKldi" parquet:"name=id_kldi, type=BYTE_ARRAY, convertedtype=UTF8"` // string upstream (not int)
-	IdReferensi      int     `json:"idReferensi" parquet:"name=id_referensi, type=INT32"`
+	IdReferensi      int64   `json:"idReferensi" parquet:"name=id_referensi, type=INT64"`
 	IdSatker         int     `json:"idSatker" parquet:"name=id_satker, type=INT32"`
 	IdMetode         int     `json:"idMetode" parquet:"name=id_metode, type=INT32"`
 	IdJenisPengadaan int     `json:"idJenisPengadaan" parquet:"name=id_jenis_pengadaan, type=INT32"`

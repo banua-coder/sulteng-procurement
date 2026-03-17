@@ -27,7 +27,7 @@ func (s *RealisasiService) Join() []domain.JoinedRecord {
 	for i, r := range s.rup {
 		jr := domain.JoinedRecord{RUP: r}
 		if r.IdReferensi != 0 {
-			if t, ok := s.index[int64(r.IdReferensi)]; ok {
+			if t, ok := s.index[r.IdReferensi]; ok {
 				jr.Tender = t
 			}
 		}
@@ -44,7 +44,7 @@ func (s *RealisasiService) GetSummary() domain.RealisasiSummary {
 	for _, r := range s.rup {
 		totalPagu += r.Pagu
 		if r.IdReferensi != 0 {
-			if t, ok := s.index[int64(r.IdReferensi)]; ok {
+			if t, ok := s.index[r.IdReferensi]; ok {
 				totalKontrak += t.NilaiKontrak
 				if strings.Contains(strings.ToLower(t.Tahap), "selesai") {
 					selesai++
