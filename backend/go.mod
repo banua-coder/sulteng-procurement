@@ -1,6 +1,6 @@
 module github.com/banua-coder/sulteng-procurement/backend
 
-go 1.26.1
+go 1.22
 
 require (
 	github.com/xitongsys/parquet-go v1.6.2

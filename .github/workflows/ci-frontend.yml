@@ -14,6 +14,7 @@ jobs:
       package-manager: npm
       working-directory: frontend
       run-lint: true
+      lint-command: 'npm run lint'
       run-typecheck: true
       run-tests: false
       run-build: true
