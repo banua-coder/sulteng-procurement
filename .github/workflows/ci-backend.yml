@@ -21,3 +21,4 @@ jobs:
       build-output: api
       coverage-threshold: 50
       post-coverage-comment: true
+      golangci-lint-version: 'v2.1.6'
