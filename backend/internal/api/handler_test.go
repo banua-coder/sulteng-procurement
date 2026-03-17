@@ -32,7 +32,9 @@ func TestGetSummary(t *testing.T) {
 	}
 
 	var summary domain.Summary
-	json.NewDecoder(w.Body).Decode(&summary)
+	if err := json.NewDecoder(w.Body).Decode(&summary); err != nil {
+		t.Fatalf("decode error: %v", err)
+	}
 	if summary.TotalPaket != 2 {
 		t.Errorf("expected 2 paket, got %d", summary.TotalPaket)
 	}
@@ -51,7 +53,9 @@ func TestGetProcurements(t *testing.T) {
 	}
 
 	var result domain.PaginatedResult
-	json.NewDecoder(w.Body).Decode(&result)
+	if err := json.NewDecoder(w.Body).Decode(&result); err != nil {
+		t.Fatalf("decode error: %v", err)
+	}
 	if result.Total != 2 {
 		t.Errorf("expected total=2, got %d", result.Total)
 	}
@@ -70,7 +74,9 @@ func TestGetFilters(t *testing.T) {
 	}
 
 	var filters map[string][]string
-	json.NewDecoder(w.Body).Decode(&filters)
+	if err := json.NewDecoder(w.Body).Decode(&filters); err != nil {
+		t.Fatalf("decode error: %v", err)
+	}
 	if len(filters["kldi"]) != 2 {
 		t.Errorf("expected 2 kldi options, got %d", len(filters["kldi"]))
 	}
@@ -96,7 +102,9 @@ func TestGetRealisasiSummary(t *testing.T) {
 		t.Errorf("expected 200, got %d", w.Code)
 	}
 	var result domain.RealisasiSummary
-	json.NewDecoder(w.Body).Decode(&result)
+	if err := json.NewDecoder(w.Body).Decode(&result); err != nil {
+		t.Fatalf("decode error: %v", err)
+	}
 	if result.TotalSelesai != 1 {
 		t.Errorf("expected 1 selesai, got %d", result.TotalSelesai)
 	}

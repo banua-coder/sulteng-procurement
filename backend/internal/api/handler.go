@@ -105,7 +105,9 @@ func (h *Handler) GetRealisasi(w http.ResponseWriter, r *http.Request) {
 
 func writeJSON(w http.ResponseWriter, data any) {
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(data)
+	if err := json.NewEncoder(w).Encode(data); err != nil {
+		http.Error(w, "encoding error", http.StatusInternalServerError)
+	}
 }
 
 func intParam(r *http.Request, key string, fallback int) int {

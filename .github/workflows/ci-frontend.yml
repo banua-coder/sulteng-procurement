@@ -19,5 +19,6 @@ jobs:
       typecheck-command: 'npm run typecheck'
       run-tests: false
       run-build: true
+      build-command: 'npm run build'
       run-coverage: false
       post-coverage-comment: true
