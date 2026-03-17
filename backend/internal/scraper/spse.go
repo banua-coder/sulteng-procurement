@@ -38,6 +38,10 @@ func (c *SpseClient) extractToken(path string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("GET %s: %w", path, err)
 	}
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		resp.Body.Close()
+		return "", fmt.Errorf("GET %s: HTTP %d", path, resp.StatusCode)
+	}
 	defer resp.Body.Close()
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -56,6 +60,9 @@ type dtResponse struct {
 }
 
 func parseLelangRow(row []any) (domain.TenderResult, error) {
+	if len(row) == 0 {
+		return domain.TenderResult{}, fmt.Errorf("empty row")
+	}
 	get := func(i int) string {
 		if i >= len(row) || row[i] == nil {
 			return ""
@@ -76,6 +83,9 @@ func parseLelangRow(row []any) (domain.TenderResult, error) {
 }
 
 func parsePLRow(row []any) (domain.TenderResult, error) {
+	if len(row) == 0 {
+		return domain.TenderResult{}, fmt.Errorf("empty row")
+	}
 	get := func(i int) string {
 		if i >= len(row) || row[i] == nil {
 			return ""
@@ -107,6 +117,10 @@ func (c *SpseClient) fetchPage(path, token string, start, length int) (*dtRespon
 	resp, err := c.http.PostForm(c.baseURL+path, form)
 	if err != nil {
 		return nil, fmt.Errorf("POST %s: %w", path, err)
+	}
+	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
+		resp.Body.Close()
+		return nil, fmt.Errorf("POST %s: HTTP %d", path, resp.StatusCode)
 	}
 	defer resp.Body.Close()
 	var result dtResponse
@@ -205,14 +219,25 @@ func (c *SpseClient) EnrichWinners(records []domain.TenderResult) []domain.Tende
 			path = fmt.Sprintf("/evaluasinontender/%d/pemenang", r.ID)
 		}
 		resp, err := c.http.Get(c.baseURL + path)
-		if err == nil {
-			body, _ := io.ReadAll(resp.Body)
+		if err != nil {
+			log.Printf("EnrichWinners: GET %s: %v", path, err)
+			enriched[i] = r
+			time.Sleep(100 * time.Millisecond)
+			continue
+		}
+		if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 			resp.Body.Close()
-			if w, ok := parseWinner(body); ok {
-				r.Pemenang = w.Pemenang
-				r.NPWP = w.NPWP
-				r.NilaiPenawaran = w.NilaiPenawaran
-			}
+			log.Printf("EnrichWinners: GET %s: HTTP %d", path, resp.StatusCode)
+			enriched[i] = r
+			time.Sleep(100 * time.Millisecond)
+			continue
+		}
+		body, _ := io.ReadAll(resp.Body)
+		resp.Body.Close()
+		if w, ok := parseWinner(body); ok {
+			r.Pemenang = w.Pemenang
+			r.NPWP = w.NPWP
+			r.NilaiPenawaran = w.NilaiPenawaran
 		}
 		enriched[i] = r
 		time.Sleep(100 * time.Millisecond)
