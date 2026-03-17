@@ -18,5 +18,6 @@ jobs:
           script: |
             cd /opt/sulteng-procurement
             docker compose run --rm scraper
+            docker compose run --rm spse-scraper
             docker compose restart backend
-            echo "Scraper completed at $(date)"
+            echo "All scrapers completed at $(date)"
