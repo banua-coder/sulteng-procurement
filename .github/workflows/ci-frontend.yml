@@ -16,6 +16,7 @@ jobs:
       run-lint: true
       lint-command: 'npm run lint'
       run-typecheck: true
+      typecheck-command: 'npm run typecheck'
       run-tests: false
       run-build: true
       run-coverage: false
