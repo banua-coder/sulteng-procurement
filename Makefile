@@ -26,6 +26,10 @@ scrape: ## Fetch latest data from SIRUP and write to parquet
 	@mkdir -p $(DATA_DIR)
 	cd backend && DATA_DIR=../$(DATA_DIR) SCRAPER_YEAR=$(SCRAPER_YEAR) go run ./cmd/scraper
 
+scrape-spse: ## Fetch SPSE tender winner data and write to parquet
+	@mkdir -p $(DATA_DIR)
+	cd backend && DATA_DIR=../$(DATA_DIR) SCRAPER_YEAR=$(SCRAPER_YEAR) go run ./cmd/spse-scraper
+
 test: ## Run all Go tests
 	cd backend && go test ./... -v
 

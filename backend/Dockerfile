@@ -3,14 +3,16 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=0 go build -o /api ./cmd/api
-RUN CGO_ENABLED=0 go build -o /scraper ./cmd/scraper
+RUN CGO_ENABLED=0 go build -o /api ./cmd/api && \
+    CGO_ENABLED=0 go build -o /scraper ./cmd/scraper && \
+    CGO_ENABLED=0 go build -o /spse-scraper ./cmd/spse-scraper
 
 FROM alpine:3.19
 RUN apk add --no-cache ca-certificates tzdata
 WORKDIR /app
 COPY --from=builder /api /app/api
 COPY --from=builder /scraper /app/scraper
+COPY --from=builder /spse-scraper /app/spse-scraper
 RUN mkdir -p /app/data
 EXPOSE 8080
 CMD ["/app/api"]

@@ -50,5 +50,17 @@ services:
     profiles:
       - scrape
 
+  spse-scraper:
+    build: ./backend
+    command: ["/app/spse-scraper"]
+    environment:
+      - DATA_DIR=/app/data
+      - SCRAPER_YEAR=${SCRAPER_YEAR:-2026}
+      - SPSE_URL=${SPSE_URL:-https://spse.inaproc.id/sultengprov}
+    volumes:
+      - procurement-data:/app/data
+    profiles:
+      - scrape
+
 volumes:
   procurement-data:
