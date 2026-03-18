@@ -1,0 +1,24 @@
+name: Backend CI
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/ci-backend.yml'
+
+jobs:
+  ci:
+    uses: banua-coder/banua-coder-workflow/.github/workflows/ci-go.yml@main
+    with:
+      go-version: '1.22'
+      working-directory: backend
+      run-tests: true
+      run-lint: true
+      run-build: true
+      run-coverage: true
+      test-packages: './...'
+      build-target: './cmd/api'
+      build-output: api
+      coverage-threshold: 50
+      post-coverage-comment: true
+      golangci-lint-version: 'v2.1.6'

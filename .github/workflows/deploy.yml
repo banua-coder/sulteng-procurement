@@ -1,0 +1,21 @@
+name: Deploy
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    uses: banua-coder/banua-coder-workflow/.github/workflows/deploy-on-tag.yml@main
+    with:
+      environment: production
+      deploy-provider: ssh
+      deploy-path: /opt/sulteng-procurement
+      build-command: 'bash scripts/deploy.sh'
+      backup-enabled: true
+      backup-keep: 3
+    secrets:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_KEY: ${{ secrets.SSH_KEY }}

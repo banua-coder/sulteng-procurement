@@ -1,0 +1,24 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/ci-frontend.yml'
+
+jobs:
+  ci:
+    uses: banua-coder/banua-coder-workflow/.github/workflows/ci-node.yml@main
+    with:
+      node-version: '20'
+      package-manager: npm
+      working-directory: frontend
+      run-lint: true
+      lint-command: 'npm run lint'
+      run-typecheck: true
+      typecheck-command: 'npm run typecheck'
+      run-tests: false
+      run-build: true
+      build-command: 'npm run build'
+      run-coverage: false
+      post-coverage-comment: true

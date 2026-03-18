@@ -1,0 +1,23 @@
+name: Daily Scraper
+
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger scraper on server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /opt/sulteng-procurement
+            docker compose run --rm scraper
+            docker compose run --rm spse-scraper
+            docker compose restart backend
+            echo "All scrapers completed at $(date)"

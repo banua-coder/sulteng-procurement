@@ -1,0 +1,9 @@
+[build]
+  cmd = "cd backend && go build -o /tmp/sulteng-api ./cmd/api"
+  bin = "/tmp/sulteng-api"
+  include_ext = ["go"]
+  exclude_dir = ["backend/data", "frontend"]
+  delay = 500
+
+[log]
+  time = false
