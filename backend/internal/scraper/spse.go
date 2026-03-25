@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/http/cookiejar"
 	"net/url"
 	"regexp"
 	"strconv"
@@ -14,6 +15,18 @@ import (
 
 	"github.com/banua-coder/sulteng-procurement/backend/internal/domain"
 )
+
+const browserUA = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+
+// uaTransport injects a browser User-Agent on every outgoing request so the
+// SPSE portal does not reject the Go default agent with 403.
+type uaTransport struct{ base http.RoundTripper }
+
+func (t *uaTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	clone := req.Clone(req.Context())
+	clone.Header.Set("User-Agent", browserUA)
+	return t.base.RoundTrip(clone)
+}
 
 var tokenRe = regexp.MustCompile(`authenticityToken\s*=\s*'([^']+)'`)
 
@@ -25,11 +38,18 @@ type SpseClient struct {
 }
 
 // NewSpseClient creates a client targeting the given base URL and budget year.
+// It uses a cookie jar so the session cookie from the initial page load is
+// automatically sent on subsequent DataTables POST requests.
 func NewSpseClient(baseURL string, year int) *SpseClient {
+	jar, _ := cookiejar.New(nil)
 	return &SpseClient{
 		baseURL: baseURL,
 		year:    year,
-		http:    &http.Client{Timeout: 30 * time.Second},
+		http: &http.Client{
+			Timeout:   30 * time.Second,
+			Jar:       jar,
+			Transport: &uaTransport{base: http.DefaultTransport},
+		},
 	}
 }
 
